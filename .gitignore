@@ -1,0 +1,38 @@
+mini_bank_app_back/endtarget/
+mini_bank_app_backend/!.mvn/wrapper/maven-wrapper.jar
+mini_bank_app_backend/!**/src/main/**/target/
+mini_bank_app_backend/!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+mini_bank_app_backend/.idea/modules.xml
+mini_bank_app_backend/.idea/jarRepositories.xml
+mini_bank_app_backend/.idea/compiler.xml
+mini_bank_app_backend/.idea/libraries/
+mini_bank_app_backend/*.iws
+mini_bank_app_backend/*.iml
+mini_bank_app_backend/*.ipr
+
+### Eclipse ###
+mini_bank_app_backend/.apt_generated
+mini_bank_app_backend/.classpath
+mini_bank_app_backend/.factorypath
+mini_bank_app_backend/.project
+mini_bank_app_backend/.settings
+mini_bank_app_backend/.springBeans
+mini_bank_app_backend/.sts4-cache
+
+### NetBeans ###
+mini_bank_app_backend/nbproject/private/
+mini_bank_app_backend/nbbuild/
+mini_bank_app_backend/dist/
+mini_bank_app_backend/nbdist/
+mini_bank_app_backend/.nb-gradle/
+mini_bank_app_backend/build/
+mini_bank_app_backend/!**/src/main/**/build/
+mini_bank_app_backend/!**/src/test/**/build/
+
+### VS Code ###
+mini_bank_app_backend/.vscode/
+
+### Mac OS ###
+mini_bank_app_backend/.DS_Store
