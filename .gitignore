@@ -4,10 +4,11 @@ mini_bank_app_backend/!**/src/main/**/target/
 mini_bank_app_backend/!**/src/test/**/target/
 
 ### IntelliJ IDEA ###
-mini_bank_app_backend/.idea/modules.xml
-mini_bank_app_backend/.idea/jarRepositories.xml
-mini_bank_app_backend/.idea/compiler.xml
-mini_bank_app_backend/.idea/libraries/
+mini_bank_app_backend/.bsp/
+mini_bank_app_backend/.idea/
+mini_bank_app_backend/project/project/target/
+mini_bank_app_backend/project/target/
+mini_bank_app_backend/target/
 mini_bank_app_backend/*.iws
 mini_bank_app_backend/*.iml
 mini_bank_app_backend/*.ipr
