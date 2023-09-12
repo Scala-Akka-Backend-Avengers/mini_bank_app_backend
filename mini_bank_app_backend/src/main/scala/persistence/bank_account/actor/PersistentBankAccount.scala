@@ -21,6 +21,7 @@ import persistence.bank_account.entity.BankAccount
  */
 class PersistentBankAccount {
 
+  //region actor-actions
   /*
     set of operations/commands this actor can receive and operate on
    */
@@ -59,7 +60,9 @@ class PersistentBankAccount {
    * @param replyTo
    */
   case class GetBankAccount(id: String, replyTo: ActorRef[Response]) extends Command
+  //endregion
 
+  //region actor-events
   /*
     events to be triggered for persistence to Cassandra
    */
@@ -90,7 +93,9 @@ class PersistentBankAccount {
    * @param currency       : String -> the currency with which user did deposit/transact
    */
   case class BalanceUpdated(id: String, user: String, updatedBalance: Double, currency: String) extends Event
+  //endregion
 
+  //region actor-responses
   /*
     set of responses this actor will generate to reply after performing any of the commands associated with this actor 'PersistentBankAccount'
    */
@@ -122,5 +127,6 @@ class PersistentBankAccount {
    * @param possibleBankAccount : Option[BankAccount] -> If the bank account details are requested for a non-existent bank account (using invalid bank account id), then the value of this parameter is None; else if the account details are requested for an existent bank account (using valid bank account id), then the value of this parameter will be Some[BankAccount]
    */
   case class GetBankAccountResponse(possibleBankAccount: Option[BankAccount]) extends Response
+  //endregion
 
 }
