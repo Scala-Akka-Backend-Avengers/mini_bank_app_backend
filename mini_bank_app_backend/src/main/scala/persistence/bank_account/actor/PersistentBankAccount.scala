@@ -3,6 +3,8 @@ package persistence.bank_account.actor
 
 import akka.actor.typed.ActorRef
 
+import persistence.bank_account.entity.BankAccount
+
 /**
  * actor entity category: single bank account
  * actor hierarchy level: base of the hierarchy
@@ -89,6 +91,36 @@ class PersistentBankAccount {
    */
   case class BalanceUpdated(id: String, user: String, updatedBalance: Double, currency: String) extends Event
 
+  /*
+    set of responses this actor will generate to reply after performing any of the commands associated with this actor 'PersistentBankAccount'
+   */
+
+  /**
+   * purpose: - bind all the responses (generated after completion of an actor action) to be replied to another actor using inheritance approach
+   *          - use this trait as a tag for all the for all the responses of an action on this actor
+   *          - once this trait is defined as the root of response that is generated on completion of an action on this actor, making it sealed to avoid definition of a response (relevant to an action) for this actor outside this class, thus preventing an external response definition for an action of this actor
+   */
   sealed trait Response
+
+  /**
+   * purpose: response to be generated on successful bank account creation
+   *
+   * @param id : String -> uuid/id of the newly created bank account
+   */
+  case class BankAccountCreatedResponse(id: String) extends Response
+
+  /**
+   * purpose: response to be generated on bank account update action completion
+   *
+   * @param possibleBankAccount : Option[BankAccount] -> If the bank account balance update operation is performed a non-existent bank account (using invalid bank account id), then the value of this parameter is None; else if the balance update operation is performed on an existent bank account (using valid bank account id), then the value of this parameter will be Some[BankAccount]
+   */
+  case class BankAccountBalanceUpdatedResponse(possibleBankAccount: Option[BankAccount]) extends Response
+
+  /**
+   * purpose: response to be generated on request completion of getting details of a bank account
+   *
+   * @param possibleBankAccount : Option[BankAccount] -> If the bank account details are requested for a non-existent bank account (using invalid bank account id), then the value of this parameter is None; else if the account details are requested for an existent bank account (using valid bank account id), then the value of this parameter will be Some[BankAccount]
+   */
+  case class GetBankAccountResponse(possibleBankAccount: Option[BankAccount]) extends Response
 
 }
