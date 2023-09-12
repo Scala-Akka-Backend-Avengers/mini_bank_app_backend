@@ -19,6 +19,45 @@ import akka.actor.typed.ActorRef
  */
 class PersistentBankAccount {
 
-  
+  /*
+    set of operations/commands this actor can receive and operate on
+   */
+
+  /**
+   * purpose: - bind all the actions to be performed on this actor together using inheritance approach
+   *          - use this trait as a tag for all the actions that can be performed with this actor
+   *          - once this trait is defined as the root of any action to be performed on this actor, making it sealed to avoid definition of an action on this actor outside this class, thus preventing an external action definition for this actor
+   */
+  sealed trait Command
+
+  /**
+   * purpose: action/command for creation of the account in the bank
+   *
+   * @param user          : String -> username of the account holder user
+   * @param currency      : String -> default currency of the account for attempting any transaction
+   * @param initialAmount : Double -> the basic amount with which an account is created
+   * @param replyTo
+   */
+  case class CreateBankAccount(user: String, currency: String, initialAmount: Double, replyTo: ActorRef[Response]) extends Command
+
+  /**
+   * purpose: action/command to update the balance in the bank account
+   *
+   * @param id       : Long -> uuid/id of the bank account
+   * @param currency : String -> specify the currency type if the transaction is done with other currency (currency exchange)
+   * @param amount   : Double -> amount involved in the transaction causing this update in the bank account. +ve for deposit and -ve for withdrawal
+   * @param replyTo  :
+   */
+  case class UpdateBalance(id: Long, currency: String, amount: Double, replyTo: ActorRef[Response]) extends Command
+
+  /**
+   * purpose: action/command to get the details of the bank account
+   *
+   * @param id : String -> uuid/id of the account whose information is to be fetched
+   * @param replyTo
+   */
+  case class GetBankAccount(id: String, replyTo: ActorRef[Response]) extends Command
+
+  sealed trait Response
 
 }
