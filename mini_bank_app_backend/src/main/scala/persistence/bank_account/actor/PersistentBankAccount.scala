@@ -58,6 +58,37 @@ class PersistentBankAccount {
    */
   case class GetBankAccount(id: String, replyTo: ActorRef[Response]) extends Command
 
+  /*
+    events to be triggered for persistence to Cassandra
+   */
+
+  /**
+   * purpose: - bind all the events (triggered after completion of an actor action) to be persisted with Cassandra together using inheritance approach
+   *          - use this trait as a tag for all the for all the persistence events for this actor
+   *          - once this trait is defined as the root of any event that is triggered on performing an action on this actor, making it sealed to avoid definition of an event (relevant to an action) for this actor outside this class, thus preventing an external event definition for an action of this actor
+   */
+  sealed trait Event
+
+  /**
+   * purpose: response event after the bank account is created
+   *
+   * @param id       : String -> uuid/id assigned to the bank account on creation
+   * @param user     : String -> username of the bank account holder
+   * @param currency : String -> the currency with which user want to deposit/transact as default
+   * @param balance  : Double -> the initial amount of deposition with which the account was created
+   */
+  case class BankAccountCreated(id: String, user: String, currency: String, balance: Double) extends Event
+
+  /**
+   * purpose: response event after the bank account's balance is updated
+   *
+   * @param id             : String -> uuid/id of the bank account
+   * @param user           : String -> username of the bank account holder
+   * @param updatedBalance : Double -> updated balance in the account after the 'UpdateBalance' command was executed on this actor
+   * @param currency       : String -> the currency with which user did deposit/transact
+   */
+  case class BalanceUpdated(id: String, user: String, updatedBalance: Double, currency: String) extends Event
+
   sealed trait Response
 
 }
