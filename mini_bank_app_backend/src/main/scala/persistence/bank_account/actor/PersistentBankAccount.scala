@@ -29,6 +29,7 @@ class PersistentBankAccount {
       3. Actor state (Every persistent actor has some state. The state update (if any) done by the event handler will then be used as the latest state for the next command/action on the actor)
    */
 
+  //region Command/Action handler
   /**
    * purpose: this function takes in command with the latest actor's state to:
    *          1. Trigger an event to be persisted in the database
@@ -66,7 +67,9 @@ class PersistentBankAccount {
       case GetBankAccount(_, rootBankActor) =>
         Effect.reply[Response, Event, BankAccount](rootBankActor)(GetBankAccountResponse(Some(actorCurrentState)))
     }
+  //endregion
 
+  //region Event handler
   /**
    * purpose: this function takes in the event just persisted in the database with the current state of the actor to:
    *          1. Update the state of the actor based on the command/action performed and generate latest state for the actor
@@ -76,6 +79,7 @@ class PersistentBankAccount {
       case BankAccountCreated(newBankAccount) => newBankAccount
       case BalanceUpdated(deltaAmount) => actorCurrentState.copy(balance = actorCurrentState.balance + deltaAmount)
     }
+  //endregion
 
   def apply(id: String): Behavior[Command] =
     EventSourcedBehavior[Command, Event, BankAccount](
