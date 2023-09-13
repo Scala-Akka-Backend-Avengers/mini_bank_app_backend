@@ -118,7 +118,7 @@ object PersistentBankAccount {
   /**
    * purpose: action/command to update the balance in the bank account
    *
-   * @param id       : Long -> uuid/id of the bank account
+   * @param id       : String -> uuid/id of the bank account
    * @param currency : String -> specify the currency type if the transaction is done with other currency (currency exchange)
    * @param amount   : Double -> amount involved in the transaction causing this update in the bank account. +ve for deposit and -ve for withdrawal
    * @param replyTo  : ActorRef[Response] -> one of the decorated responses of type Response is sent to the root bank actor
