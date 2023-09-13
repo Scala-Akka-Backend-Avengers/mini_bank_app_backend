@@ -103,7 +103,7 @@ object PersistentBankAccount {
    *          - use this trait as a tag for all the actions that can be performed with this actor
    *          - once this trait is defined as the root of any action to be performed on this actor, making it sealed to avoid definition of an action on this actor outside this class, thus preventing an external action definition for this actor
    */
-  private sealed trait Command
+  sealed trait Command
 
   /**
    * purpose: action/command for creation of the account in the bank
@@ -113,7 +113,7 @@ object PersistentBankAccount {
    * @param initialAmount : Double -> the basic amount with which an account is created
    * @param replyTo       : ActorRef[Response] -> one of the decorated responses of type Response is sent to the root bank actor
    */
-  private case class CreateBankAccount(user: String, currency: String, initialAmount: Double, replyTo: ActorRef[Response]) extends Command
+  case class CreateBankAccount(user: String, currency: String, initialAmount: Double, replyTo: ActorRef[Response]) extends Command
 
   /**
    * purpose: action/command to update the balance in the bank account
@@ -123,7 +123,7 @@ object PersistentBankAccount {
    * @param amount   : Double -> amount involved in the transaction causing this update in the bank account. +ve for deposit and -ve for withdrawal
    * @param replyTo  : ActorRef[Response] -> one of the decorated responses of type Response is sent to the root bank actor
    */
-  private case class UpdateBalance(id: String, currency: String, amount: Double, replyTo: ActorRef[Response]) extends Command
+  case class UpdateBalance(id: String, currency: String, amount: Double, replyTo: ActorRef[Response]) extends Command
 
   /**
    * purpose: action/command to get the details of the bank account
@@ -131,7 +131,7 @@ object PersistentBankAccount {
    * @param id      : String -> uuid/id of the account whose information is to be fetched
    * @param replyTo : ActorRef[Response] -> one of the decorated responses of type Response is sent to the root bank actor
    */
-  private case class GetBankAccount(id: String, replyTo: ActorRef[Response]) extends Command
+  case class GetBankAccount(id: String, replyTo: ActorRef[Response]) extends Command
   //endregion
 
   //region actor-events
@@ -144,7 +144,7 @@ object PersistentBankAccount {
    *          - use this trait as a tag for all the for all the persistence events for this actor
    *          - once this trait is defined as the root of any event that is triggered on performing an action on this actor, making it sealed to avoid definition of an event (relevant to an action) for this actor outside this class, thus preventing an external event definition for an action of this actor
    */
-  private sealed trait Event
+  sealed trait Event
 
   /**
    * purpose: response event after the bank account is created
@@ -155,14 +155,14 @@ object PersistentBankAccount {
    *                    currency : String -> the currency with which user want to deposit/transact as default
    *                    balance  : Double -> the initial amount of deposition with which the account was created
    */
-  private case class BankAccountCreated(bankAccount: BankAccount) extends Event
+  case class BankAccountCreated(bankAccount: BankAccount) extends Event
 
   /**
    * purpose: response event after the bank account's balance is updated
    *
    * @param updatedBalanceBy : Double -> amount by which the balance was updated in the account after the 'UpdateBalance' command was executed on this actor
    */
-  private case class BalanceUpdated(updatedBalanceBy: Double) extends Event
+  case class BalanceUpdated(updatedBalanceBy: Double) extends Event
   //endregion
 
   //region actor-responses
@@ -175,27 +175,27 @@ object PersistentBankAccount {
    *          - use this trait as a tag for all the for all the responses of an action on this actor
    *          - once this trait is defined as the root of response that is generated on completion of an action on this actor, making it sealed to avoid definition of a response (relevant to an action) for this actor outside this class, thus preventing an external response definition for an action of this actor
    */
-  private sealed trait Response
+  sealed trait Response
 
   /**
    * purpose: response to be generated on successful bank account creation
    *
    * @param id : String -> uuid/id of the newly created bank account
    */
-  private case class BankAccountCreatedResponse(id: String) extends Response
+  case class BankAccountCreatedResponse(id: String) extends Response
 
   /**
    * purpose: response to be generated on bank account update action completion
    *
    * @param possibleBankAccount : Option[BankAccount] -> If the bank account balance update operation is performed a non-existent bank account (using invalid bank account id), then the value of this parameter is None; else if the balance update operation is performed on an existent bank account (using valid bank account id), then the value of this parameter will be Some[BankAccount]
    */
-  private case class BankAccountBalanceUpdatedResponse(possibleBankAccount: Option[BankAccount]) extends Response
+  case class BankAccountBalanceUpdatedResponse(possibleBankAccount: Option[BankAccount]) extends Response
 
   /**
    * purpose: response to be generated on request completion of getting details of a bank account
    *
    * @param possibleBankAccount : Option[BankAccount] -> If the bank account details are requested for a non-existent bank account (using invalid bank account id), then the value of this parameter is None; else if the account details are requested for an existent bank account (using valid bank account id), then the value of this parameter will be Some[BankAccount]
    */
-  private case class GetBankAccountResponse(possibleBankAccount: Option[BankAccount]) extends Response
+  case class GetBankAccountResponse(possibleBankAccount: Option[BankAccount]) extends Response
   //endregion
 }
