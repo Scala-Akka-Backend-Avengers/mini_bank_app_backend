@@ -22,6 +22,7 @@ import persistence.bank_account.entity.BankAccount
  *    responses: to be sent to whoever queries or tries to modify the bank account
  */
 class PersistentBankAccount {
+  import PersistentBankAccount._
   /*
     There are three important parts of the implementation of an Actor class:
       1. Command/Action handler (Upon receiving a command/action/message, the corresponding (command/action/message) handler will persist an event)
@@ -89,6 +90,9 @@ class PersistentBankAccount {
       emptyState = BankAccount(id, "", "", 0.0)
     )
 
+}
+
+object PersistentBankAccount {
   //region actor-actions
   /*
     set of operations/commands this actor can receive and operate on
@@ -194,5 +198,4 @@ class PersistentBankAccount {
    */
   private case class GetBankAccountResponse(possibleBankAccount: Option[BankAccount]) extends Response
   //endregion
-
 }
