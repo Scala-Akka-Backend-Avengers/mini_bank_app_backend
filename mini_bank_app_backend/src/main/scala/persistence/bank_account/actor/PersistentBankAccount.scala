@@ -1,8 +1,10 @@
 package com.fun.mini_bank
 package persistence.bank_account.actor
 
-import akka.actor.typed.ActorRef
-import akka.persistence.typed.scaladsl.Effect
+import akka.actor.typed.{ActorRef, Behavior}
+import akka.persistence.typed.PersistenceId
+import akka.persistence.typed.scaladsl.{Effect, EventSourcedBehavior}
+
 import persistence.bank_account.entity.BankAccount
 
 /**
@@ -74,6 +76,14 @@ class PersistentBankAccount {
       case BankAccountCreated(newBankAccount) => newBankAccount
       case BalanceUpdated(deltaAmount) => actorCurrentState.copy(balance = actorCurrentState.balance + deltaAmount)
     }
+
+  def apply(id: String): Behavior[Command] =
+    EventSourcedBehavior[Command, Event, BankAccount](
+      persistenceId = PersistenceId.ofUniqueId(id),
+      commandHandler = commandHandler,
+      eventHandler = eventHandler,
+      emptyState = BankAccount(id, "", "", 0.0)
+    )
 
   //region actor-actions
   /*
