@@ -2,7 +2,7 @@ package com.fun.mini_bank
 package persistence.bank_account.actor
 
 import akka.actor.typed.ActorRef
-
+import akka.persistence.typed.scaladsl.Effect
 import persistence.bank_account.entity.BankAccount
 
 /**
@@ -20,6 +20,50 @@ import persistence.bank_account.entity.BankAccount
  *    responses: to be sent to whoever queries or tries to modify the bank account
  */
 class PersistentBankAccount {
+  /*
+    There are three important parts of the implementation of an Actor class:
+      1. Command/Action handler (Upon receiving a command/action/message, the corresponding (command/action/message) handler will persist an event)
+      2. Event handler (Once the event is persisted in the persistent store, i.e. Cassandra in this case, the event handler will update state)
+      3. Actor state (Every persistent actor has some state. The state update (if any) done by the event handler will then be used as the latest state for the next command/action on the actor)
+   */
+
+  /**
+   * purpose: this function takes in command with the latest actor's state to:
+   *          1. Trigger an event to be persisted in the database
+   */
+  private val commandHandler: (BankAccount, Command) => Effect[Event, BankAccount] =
+    (actorCurrentState, commandForActor) => commandForActor match {
+      /*
+          The stages in which this works is as below:
+            1. Root bank actor creates the PersistentBankAccount actor using the apply() method
+            2. Bank actor sends the CreateBankAccount command to PersistentBankAccount actor
+            3. (From inside commandHandler) PersistentBankAccount actor triggers an event BankAccountCreated and persists it
+            4. (From inside eventHandler) PersistentBankAccount actor updates its state referring to the event persisted
+            5. Replies back to the root bank account actor with the BankAccountCreatedResponse response
+            6. The root bank actor surfaces the response to the HTTP server
+       */
+      case CreateBankAccount(user, currency, initialAmount, rootBankActor) =>
+        val id = actorCurrentState.id
+        Effect.persist[Event, BankAccount](BankAccountCreated(BankAccount(id, user, currency, initialAmount))).thenReply[Response](rootBankActor)((_: BankAccount) => BankAccountCreatedResponse(id)
+        )
+      case UpdateBalance(_, _, deltaAmount, rootBankActor) =>
+        val updatedBalance = actorCurrentState.balance + deltaAmount
+        /*
+           this scenario is not possible where we withdraw amount more than the balance in the account
+           So, no event is triggered to persist, we are only replying to the actor
+         */
+        if (updatedBalance < 0)
+          Effect.reply[Response, Event, BankAccount](rootBankActor)(BankAccountBalanceUpdatedResponse(None))
+        else
+          Effect.persist[Event, BankAccount](BalanceUpdated(deltaAmount)).thenReply[Response](rootBankActor)((balanceUpdatedBankAccount: BankAccount) => BankAccountBalanceUpdatedResponse(Some(balanceUpdatedBankAccount)))
+      /*
+         - this being a case of a simple read operation, we can directly use the reply() method
+         - there is nothing to persist
+         - we just need to return Some(currentState) to the right-full actor which is having the ID as mentioned in the command, so the ID value can be ignored writing it as '_' in the command
+       */
+      case GetBankAccount(_, rootBankActor) =>
+        Effect.reply[Response, Event, BankAccount](rootBankActor)(GetBankAccountResponse(Some(actorCurrentState)))
+    }
 
   //region actor-actions
   /*
