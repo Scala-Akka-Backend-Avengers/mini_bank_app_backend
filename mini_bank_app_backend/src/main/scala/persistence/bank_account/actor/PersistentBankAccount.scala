@@ -65,6 +65,16 @@ class PersistentBankAccount {
         Effect.reply[Response, Event, BankAccount](rootBankActor)(GetBankAccountResponse(Some(actorCurrentState)))
     }
 
+  /**
+   * purpose: this function takes in the event just persisted in the database with the current state of the actor to:
+   *          1. Update the state of the actor based on the command/action performed and generate latest state for the actor
+   */
+  private val eventHandler: (BankAccount, Event) => BankAccount =
+    (actorCurrentState, event) => event match {
+      case BankAccountCreated(newBankAccount) => newBankAccount
+      case BalanceUpdated(deltaAmount) => actorCurrentState.copy(balance = actorCurrentState.balance + deltaAmount)
+    }
+
   //region actor-actions
   /*
     set of operations/commands this actor can receive and operate on
